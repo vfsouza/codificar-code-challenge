@@ -10,8 +10,15 @@ namespace Codificar.Infrastructure {
 			);
 
 			services.AddSingleton<IChamadosDbContextFactory, ChamadosDbContextFactory>();
+			services.AddTransient<DatabaseInitializer>();
 
 			return services;
+		}
+
+		public static async Task InitializeDatabaseAsync(this IServiceProvider services, CancellationToken cancellationToken = default) {
+			await using var scope = services.CreateAsyncScope();
+			var initializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+			await initializer.InitializeAsync(cancellationToken);
 		}
 	}
 }
