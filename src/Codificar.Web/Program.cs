@@ -1,4 +1,7 @@
+using Codificar.Application;
+using Codificar.Infrastructure;
 using Codificar.Web.Components;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,8 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 
+builder.Services.AddMudServices();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(
+	builder.Configuration.GetConnectionString("Chamados")
+	?? throw new InvalidOperationException("Connection string 'Chamados' não configurada.")
+);
 
 var app = builder.Build();
+
+await app.Services.InitializeDatabaseAsync();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment()) {
