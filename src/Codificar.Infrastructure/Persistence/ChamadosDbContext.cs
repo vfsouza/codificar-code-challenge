@@ -1,4 +1,5 @@
-﻿using Codificar.Domain.Entities;
+﻿using Codificar.Application.Abstractions;
+using Codificar.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codificar.Infrastructure.Persistence;

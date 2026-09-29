@@ -1,7 +1,7 @@
 ﻿using Codificar.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Codificar.Infrastructure.Persistence;
+namespace Codificar.Application.Abstractions;
 
 public interface IChamadosDbContext : IAsyncDisposable {
 	DbSet<Chamado> Chamados { get; }

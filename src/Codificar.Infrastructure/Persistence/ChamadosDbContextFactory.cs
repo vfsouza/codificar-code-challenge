@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Codificar.Application.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Codificar.Infrastructure.Persistence;
 

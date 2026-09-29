@@ -1,4 +1,5 @@
-﻿using Codificar.Infrastructure.Persistence;
+﻿using Codificar.Application.Abstractions;
+using Codificar.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

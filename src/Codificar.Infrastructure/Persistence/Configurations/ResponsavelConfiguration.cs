@@ -1,10 +1,13 @@
 ﻿using Codificar.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codificar.Infrastructure.Persistence.Configurations;
 
-public class ResponsavelConfiguration {
+internal sealed class ResponsavelConfiguration : IEntityTypeConfiguration<Responsavel> {
 	public void Configure(EntityTypeBuilder<Responsavel> builder) {
+		builder.ToTable("Responsaveis");
+
 		builder.HasKey(r => r.Id);
 		builder.Property(r => r.Nome).HasMaxLength(100).IsRequired();
 
