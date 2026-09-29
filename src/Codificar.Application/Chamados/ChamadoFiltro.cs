@@ -1,5 +1,5 @@
-﻿namespace Codificar.Application.Chamados {
-	public class ChamadoFiltro {
-		
-	}
+﻿namespace Codificar.Application.Chamados;
+
+public class ChamadoFiltro {
+
 }

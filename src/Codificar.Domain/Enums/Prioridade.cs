@@ -1,7 +1,7 @@
-﻿namespace Codificar.Domain.Enums {
-	public enum Prioridade {
-		Baixa,
-		Media,
-		Alta
-	}
+﻿namespace Codificar.Domain.Enums;
+
+public enum Prioridade {
+	Baixa,
+	Media,
+	Alta
 }

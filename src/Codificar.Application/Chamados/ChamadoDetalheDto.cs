@@ -1,5 +1,5 @@
-﻿namespace Codificar.Application.Chamados {
-	public class ChamadoDetalheDto {
-		
-	}
+﻿namespace Codificar.Application.Chamados;
+
+public class ChamadoDetalheDto {
+
 }

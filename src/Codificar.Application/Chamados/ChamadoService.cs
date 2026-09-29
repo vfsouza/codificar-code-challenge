@@ -1,8 +1,8 @@
-﻿namespace Codificar.Application.Chamados {
-	public class ChamadoService : IChamadoService {
-		
-	}
+﻿namespace Codificar.Application.Chamados;
 
-	public interface IChamadoService {
-	}
+public class ChamadoService : IChamadoService {
+
+}
+
+public interface IChamadoService {
 }

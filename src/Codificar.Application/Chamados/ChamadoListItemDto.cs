@@ -1,5 +1,5 @@
-﻿namespace Codificar.Application.Chamados {
-	public class ChamadoListItemDto {
-		
-	}
+﻿namespace Codificar.Application.Chamados;
+
+public class ChamadoListItemDto {
+
 }

@@ -1,8 +1,8 @@
-﻿namespace Codificar.Application.Responsaveis {
-	public class ResponsavelService : IResponsavelService {
+﻿namespace Codificar.Application.Responsaveis;
 
-	}
-	
-	public interface IResponsavelService {
-	}
+public class ResponsavelService : IResponsavelService {
+
+}
+
+public interface IResponsavelService {
 }

@@ -1,5 +1,5 @@
-﻿namespace Codificar.Application.Responsaveis {
-	public class CargaResponsavelDto {
-		
-	}
+﻿namespace Codificar.Application.Responsaveis;
+
+public class CargaResponsavelDto {
+
 }

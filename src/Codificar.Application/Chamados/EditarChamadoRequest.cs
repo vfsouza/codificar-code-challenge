@@ -1,5 +1,5 @@
-﻿namespace Codificar.Application.Chamados {
-	public class EditarChamadoRequest {
-		
-	}
+﻿namespace Codificar.Application.Chamados;
+
+public class EditarChamadoRequest {
+
 }

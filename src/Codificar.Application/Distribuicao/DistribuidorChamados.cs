@@ -1,8 +1,8 @@
-﻿namespace Codificar.Application.Distribuicao {
-	public class DistribuidorChamados : IDistribuidorChamados {
-		
-	}
+﻿namespace Codificar.Application.Distribuicao;
 
-	public interface IDistribuidorChamados {
-	}
+public class DistribuidorChamados : IDistribuidorChamados {
+
+}
+
+public interface IDistribuidorChamados {
 }

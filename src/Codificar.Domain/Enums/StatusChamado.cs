@@ -1,8 +1,8 @@
-﻿namespace Codificar.Domain.Enums {
-	public enum StatusChamado {
-		Aberto,
-		EmAndamento,
-		Resolvido,
-		Fechado
-	}
+﻿namespace Codificar.Domain.Enums;
+
+public enum StatusChamado {
+	Aberto,
+	EmAndamento,
+	Resolvido,
+	Fechado
 }
