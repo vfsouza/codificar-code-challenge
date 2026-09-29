@@ -25,7 +25,7 @@ public class Chamado {
 	public int ResponsavelId { get; private set; }
 	public Responsavel Responsavel { get; private set; } = null!;
 
-	public Chamado() {
+	private Chamado() {
 	}
 
 	public static Chamado Abrir(string titulo, string descricao, Prioridade prioridade, string solicitante, int responsavelId, DateTime abertoEm) {
