@@ -11,9 +11,9 @@ internal sealed class ChamadoConfiguration : IEntityTypeConfiguration<Chamado> {
 
 		builder.HasKey(c => c.Id);
 
-		builder.Property(c => c.Titulo).HasMaxLength(150).IsRequired();
-		builder.Property(c => c.Descricao).HasMaxLength(2000).IsRequired();
-		builder.Property(c => c.Solicitante).HasMaxLength(100).IsRequired();
+		builder.Property(c => c.Titulo).HasMaxLength(Chamado.TituloTamanhoMaximo).IsRequired();
+		builder.Property(c => c.Descricao).HasMaxLength(Chamado.DescricaoTamanhoMaximo).IsRequired();
+		builder.Property(c => c.Solicitante).HasMaxLength(Chamado.SolicitanteTamanhoMaximo).IsRequired();
 
 		// Enums como texto: banco legível e imune a reordenação dos membros.
 		builder.Property(c => c.Prioridade).HasConversion<string>().HasMaxLength(20);

@@ -3,10 +3,13 @@
 namespace Codificar.Domain.Extensions;
 
 public static class StatusChamadoExtensions {
-	public static bool EstaPendente(this StatusChamado status) => status switch {
-		StatusChamado.Aberto or StatusChamado.EmAndamento => true,
-		_ => false
-	};
+	/// <summary>
+	/// Status considerados "em aberto": o trabalho do responsável ainda não terminou.
+	/// Fonte única da regra, usada pela entidade, pelo distribuidor e pelos filtros.
+	/// </summary>
+	public static readonly IReadOnlyCollection<StatusChamado> Pendentes = [StatusChamado.Aberto, StatusChamado.EmAndamento];
+
+	public static bool EstaPendente(this StatusChamado status) => Pendentes.Contains(status);
 
 	public static string Descricao(this StatusChamado status) => status switch {
 		StatusChamado.Aberto => "Aberto",
@@ -16,3 +19,4 @@ public static class StatusChamadoExtensions {
 		_ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
 	};
 }
+

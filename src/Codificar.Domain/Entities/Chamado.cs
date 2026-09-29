@@ -12,6 +12,10 @@ public class Chamado {
 		[StatusChamado.Fechado] = [],
 	};
 
+	public const int TituloTamanhoMaximo = 150;
+	public const int DescricaoTamanhoMaximo = 2000;
+	public const int SolicitanteTamanhoMaximo = 100;
+
 	public int Id { get; private set; }
 	public string Titulo { get; private set; } = null!;
 	public string Descricao { get; private set; } = null!;
@@ -66,6 +70,8 @@ public class Chamado {
 
 	public bool PodeTransicionarPara(StatusChamado novoStatus)
 		=> TransicoesPermitidas[Status].Contains(novoStatus);
+
+	public IReadOnlyCollection<StatusChamado> ProximosStatusPossiveis => TransicoesPermitidas[Status];
 
 	private void DefinirDados(string titulo, string descricao, Prioridade prioridade, string solicitante) {
 		Titulo = ObrigatorioOuErro(titulo, nameof(Titulo));

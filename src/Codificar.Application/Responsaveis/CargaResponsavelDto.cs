@@ -1,5 +1,3 @@
 ﻿namespace Codificar.Application.Responsaveis;
 
-public class CargaResponsavelDto {
-
-}
+public sealed record CargaResponsavelDto(int ResponsavelId, string Nome, int Pendentes);

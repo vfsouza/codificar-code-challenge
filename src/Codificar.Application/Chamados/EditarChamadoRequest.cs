@@ -1,5 +1,7 @@
-﻿namespace Codificar.Application.Chamados;
+﻿using Codificar.Domain.Enums;
 
-public class EditarChamadoRequest {
+namespace Codificar.Application.Chamados;
 
+public sealed class EditarChamadoRequest : CriarChamadoRequest {
+	public StatusChamado Status { get; set; }
 }
