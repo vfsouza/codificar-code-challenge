@@ -1,28 +1,27 @@
-﻿@using MudBlazor
 @inherits LayoutComponentBase
 
-<MudThemeProvider />
-<MudPopoverProvider />
+<MudThemeProvider/>
+<MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
-<div class="page">
-    <div class="sidebar">
-    </div>
+<MudLayout>
+    <MudAppBar Elevation="1" Dense="true">
+        <MudIcon Icon="@Icons.Material.Filled.SupportAgent" Class="mr-3"/>
+        <MudLink Href="/chamados" Color="Color.Inherit" Underline="Underline.None" Typo="Typo.h6">
+            Chamados Internos
+        </MudLink>
+    </MudAppBar>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="py-6">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
+    Ocorreu um erro inesperado.
+    <a href="." class="reload">Recarregar</a>
     <span class="dismiss">🗙</span>
 </div>
