@@ -1,5 +1,71 @@
-﻿<h3>FiltrosChamados</h3>
+<MudPaper Outlined="true" Class="pa-4 mb-4">
+    <MudGrid Spacing="2" Class="align-center">
+        <MudItem xs="12" md="4">
+            <MudTextField T="string"
+                          Value="@Filtro.Busca"
+                          ValueChanged="AlterarBuscaAsync"
+                          DebounceInterval="400"
+                          Label="Buscar"
+                          Placeholder="Título ou solicitante"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Clearable="true"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"/>
+        </MudItem>
 
-@code {
-    
-}
+        <MudItem xs="12" sm="4" md="3">
+            <MudSelect T="StatusChamado"
+                       SelectedValues="@Filtro.Status"
+                       SelectedValuesChanged="AlterarStatusAsync"
+                       MultiSelection="true"
+                       ToStringFunc="@(s => s.Descricao())"
+                       Label="Status"
+                       Placeholder="Todos"
+                       Variant="Variant.Outlined"
+                       Margin="Margin.Dense">
+                @foreach (var status in Enum.GetValues<StatusChamado>()) {
+                    <MudSelectItem T="StatusChamado" Value="@status">@status.Descricao()</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="12" sm="4" md="2">
+            <MudSelect T="Prioridade?"
+                       Value="@Filtro.Prioridade"
+                       ValueChanged="AlterarPrioridadeAsync"
+                       ToStringFunc="@(p => p?.Descricao() ?? string.Empty)"
+                       Label="Prioridade"
+                       Placeholder="Todas"
+                       Clearable="true"
+                       Variant="Variant.Outlined"
+                       Margin="Margin.Dense">
+                @foreach (var prioridade in Enum.GetValues<Prioridade>()) {
+                    <MudSelectItem T="Prioridade?" Value="@prioridade">@prioridade.Descricao()</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="12" sm="4" md="2">
+            <MudSelect T="int?"
+                       Value="@Filtro.ResponsavelId"
+                       ValueChanged="AlterarResponsavelAsync"
+                       ToStringFunc="NomeDoResponsavel"
+                       Label="Responsável"
+                       Placeholder="Todos"
+                       Clearable="true"
+                       Variant="Variant.Outlined"
+                       Margin="Margin.Dense">
+                @foreach (var responsavel in Responsaveis) {
+                    <MudSelectItem T="int?" Value="@responsavel.Id">@responsavel.Nome</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="12" md="1" Class="d-flex justify-end">
+            <MudTooltip Text="Restaurar filtros padrão">
+                <MudIconButton Icon="@Icons.Material.Filled.FilterAltOff" OnClick="RestaurarAsync"/>
+            </MudTooltip>
+        </MudItem>
+    </MudGrid>
+</MudPaper>

@@ -1,5 +1,13 @@
-﻿<h3>StatusBadge</h3>
+<MudChip T="string" Text="@Status.Descricao()" Color="@Cor" Size="Size.Small" Variant="Variant.Text"/>
 
 @code {
-    
+    [Parameter, EditorRequired]
+    public StatusChamado Status { get; set; }
+
+    private Color Cor => Status switch {
+        StatusChamado.Aberto => Color.Info,
+        StatusChamado.EmAndamento => Color.Warning,
+        StatusChamado.Resolvido => Color.Success,
+        _ => Color.Default
+    };
 }

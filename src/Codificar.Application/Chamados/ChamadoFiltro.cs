@@ -3,7 +3,7 @@ using Codificar.Domain.Extensions;
 
 namespace Codificar.Application.Chamados;
 
-public sealed class ChamadoFiltro {
+public sealed record ChamadoFiltro {
 	/// <summary>Vazio = todos os status. Padrão: apenas os pendentes.</summary>
 	public IReadOnlyCollection<StatusChamado> Status { get; set; } = StatusChamadoExtensions.Pendentes;
 

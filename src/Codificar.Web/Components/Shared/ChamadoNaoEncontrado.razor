@@ -1,0 +1,7 @@
+<MudAlert Severity="Severity.Warning" Class="mb-4">Chamado #@(Id) não encontrado.</MudAlert>
+<MudButton Href="/chamados" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack">Voltar para os chamados</MudButton>
+
+@code {
+    [Parameter, EditorRequired]
+    public int Id { get; set; }
+}

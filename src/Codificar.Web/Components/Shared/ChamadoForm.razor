@@ -1,5 +1,83 @@
-﻿<h3>ChamadoForm</h3>
+<EditForm Model="Model" OnValidSubmit="OnSalvar">
+    <DataAnnotationsValidator/>
 
-@code {
-    
-}
+    <MudGrid Spacing="3">
+        <MudItem xs="12">
+            <MudTextField @bind-Value="Model.Titulo"
+                          For="@(() => Model.Titulo)"
+                          Label="Título"
+                          Counter="Chamado.TituloTamanhoMaximo"
+                          MaxLength="Chamado.TituloTamanhoMaximo"
+                          Variant="Variant.Outlined"/>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudTextField @bind-Value="Model.Descricao"
+                          For="@(() => Model.Descricao)"
+                          Label="Descrição"
+                          Lines="5"
+                          Counter="Chamado.DescricaoTamanhoMaximo"
+                          MaxLength="Chamado.DescricaoTamanhoMaximo"
+                          Variant="Variant.Outlined"/>
+        </MudItem>
+
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="Model.Solicitante"
+                          For="@(() => Model.Solicitante)"
+                          Label="Solicitante"
+                          HelperText="Quem pediu o atendimento"
+                          MaxLength="Chamado.SolicitanteTamanhoMaximo"
+                          Variant="Variant.Outlined"/>
+        </MudItem>
+
+        <MudItem xs="12" sm="6">
+            <MudSelect T="Prioridade"
+                       @bind-Value="Model.Prioridade"
+                       ToStringFunc="@(p => p.Descricao())"
+                       Label="Prioridade"
+                       Variant="Variant.Outlined">
+                @foreach (var prioridade in Enum.GetValues<Prioridade>()) {
+                    <MudSelectItem T="Prioridade" Value="@prioridade">@prioridade.Descricao()</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="12" sm="6">
+            <MudSelect T="int?"
+                       @bind-Value="Model.ResponsavelId"
+                       ToStringFunc="NomeDoResponsavel"
+                       Label="Responsável"
+                       HelperText="@AjudaResponsavel"
+                       Disabled="@(!PodeReatribuir)"
+                       Variant="Variant.Outlined">
+                @if (!EhEdicao) {
+                    <MudSelectItem T="int?" Value="@((int?)null)">@AtribuirAutomaticamente</MudSelectItem>
+                }
+                @foreach (var responsavel in Responsaveis) {
+                    <MudSelectItem T="int?" Value="@responsavel.Id">@responsavel.Nome</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+
+        @if (Edicao is not null) {
+            <MudItem xs="12" sm="6">
+                <MudSelect T="StatusChamado"
+                           @bind-Value="Edicao.Status"
+                           ToStringFunc="@(s => s.Descricao())"
+                           Label="Status"
+                           Variant="Variant.Outlined">
+                    @foreach (var status in StatusDisponiveis) {
+                        <MudSelectItem T="StatusChamado" Value="@status">@status.Descricao()</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        }
+
+        <MudItem xs="12" Class="d-flex justify-end gap-2">
+            <MudButton Variant="Variant.Text" OnClick="OnCancelar" Disabled="Salvando">Cancelar</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="Salvando">
+                @(Salvando ? "Salvando..." : "Salvar")
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>

@@ -1,5 +1,12 @@
-﻿<h3>PrioridadeBadge</h3>
+<MudChip T="string" Text="@Prioridade.Descricao()" Color="@Cor" Size="Size.Small" Variant="Variant.Outlined"/>
 
 @code {
-    
+    [Parameter, EditorRequired]
+    public Prioridade Prioridade { get; set; }
+
+    private Color Cor => Prioridade switch {
+        Prioridade.Alta => Color.Error,
+        Prioridade.Media => Color.Warning,
+        _ => Color.Default
+    };
 }

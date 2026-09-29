@@ -1,5 +1,25 @@
-﻿<h3>PainelCarga</h3>
+<MudText Typo="Typo.subtitle2" Class="mb-2">Chamados em aberto por responsável</MudText>
+
+<MudGrid Spacing="2" Class="mb-4">
+    @foreach (var (carga, indice) in Cargas.Select((c, i) => (c, i))) {
+        <MudItem xs="6" sm="3">
+            <MudPaper Outlined="true" Class="pa-3">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.body2">@carga.Nome</MudText>
+                    @if (indice == 0) {
+                        <MudTooltip Text="Próximo a receber um chamado com atribuição automática">
+                            <MudChip T="string" Text="Próximo" Color="Color.Primary" Size="Size.Small"/>
+                        </MudTooltip>
+                    }
+                </MudStack>
+                <MudText Typo="Typo.h5">@carga.Pendentes</MudText>
+            </MudPaper>
+        </MudItem>
+    }
+</MudGrid>
 
 @code {
-    
+    /// <summary>Carga já ordenada pela regra de distribuição: o primeiro é o próximo da fila.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<CargaResponsavelDto> Cargas { get; set; } = [];
 }
