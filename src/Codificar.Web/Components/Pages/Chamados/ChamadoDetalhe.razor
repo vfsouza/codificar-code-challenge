@@ -1,6 +1,59 @@
-﻿@page "/ChamadoDetalhe"
-<h3>ChamadoDetalhe</h3>
+@page "/chamados/{Id:int}"
 
-@code {
-    
+<PageTitle>Chamado #@Id</PageTitle>
+
+@if (_carregando) {
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary"/>
+} else if (_chamado is null) {
+    <ChamadoNaoEncontrado Id="Id"/>
+} else {
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Href="/chamados" Icon="@Icons.Material.Filled.ArrowBack" aria-label="Voltar"/>
+        <MudText Typo="Typo.h5" HtmlTag="h1">#@_chamado.Id · @_chamado.Titulo</MudText>
+        <StatusBadge Status="_chamado.Status"/>
+        <PrioridadeBadge Prioridade="_chamado.Prioridade"/>
+    </MudStack>
+
+    <MudPaper Outlined="true" Class="pa-4 mb-4">
+        <MudGrid Spacing="3">
+            <MudItem xs="12" sm="6" md="4">
+                <MudText Typo="Typo.caption">Solicitante</MudText>
+                <MudText>@_chamado.Solicitante</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudText Typo="Typo.caption">Responsável</MudText>
+                <MudText>@_chamado.ResponsavelNome</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudText Typo="Typo.caption">Aberto em</MudText>
+                <MudText>@_chamado.AbertoEm.DataHora()</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudText Typo="Typo.caption">Última atualização</MudText>
+                <MudText>@_chamado.AtualizadoEm.DataHora()</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudText Typo="Typo.caption">Concluído em</MudText>
+                <MudText>@_chamado.ConcluidoEm.DataHora()</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <MudText Typo="Typo.caption">Descrição</MudText>
+                <MudText Style="white-space: pre-wrap">@_chamado.Descricao</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
+        <MudButton Href="@($"/chamados/{Id}/editar")" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Edit">
+            Editar
+        </MudButton>
+        @foreach (var proximo in _chamado.ProximosStatusPossiveis) {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="_salvando"
+                       OnClick="() => AlterarStatusAsync(proximo)">
+                @RotuloDaAcao(_chamado.Status, proximo)
+            </MudButton>
+        }
+    </MudStack>
 }

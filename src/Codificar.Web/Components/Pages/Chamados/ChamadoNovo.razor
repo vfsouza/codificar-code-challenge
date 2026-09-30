@@ -1,6 +1,13 @@
-﻿@page "/ChamadoNovo"
-<h3>ChamadoNovo</h3>
+@page "/chamados/novo"
 
-@code {
-    
-}
+<PageTitle>Novo chamado</PageTitle>
+
+<MudText Typo="Typo.h5" HtmlTag="h1" Class="mb-4">Novo chamado</MudText>
+
+<MudPaper Outlined="true" Class="pa-4">
+    <ChamadoForm Model="_model"
+                 Responsaveis="_responsaveis"
+                 Salvando="_salvando"
+                 OnSalvar="SalvarAsync"
+                 OnCancelar="Voltar"/>
+</MudPaper>

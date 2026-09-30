@@ -1,14 +1,46 @@
-﻿@page "/chamados"
-@using Codificar.Web.Components.Shared
-@using Codificar.Application.Chamados
-@using MudBlazor
+@page "/"
+@page "/chamados"
 
-<PainelCarga/>
+<PageTitle>Chamados</PageTitle>
 
-<FiltrosChamados/>
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+    <MudText Typo="Typo.h5" HtmlTag="h1">Chamados</MudText>
+    <MudButton Href="/chamados/novo" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+        Novo chamado
+    </MudButton>
+</MudStack>
 
-<MudTable T="ChamadoListItemDto"></MudTable>
+<PainelCarga Cargas="_cargas"/>
 
-@code {
-    
-}
+<FiltrosChamados @bind-Filtro="_filtro" @bind-Filtro:after="CarregarChamadosAsync" Responsaveis="_responsaveis"/>
+
+<MudTable T="ChamadoListItemDto"
+          Items="_chamados"
+          Loading="_carregando"
+          Hover="true"
+          Dense="true"
+          OnRowClick="AbrirDetalhe"
+          RowStyle="cursor: pointer"
+          Breakpoint="Breakpoint.Sm">
+    <HeaderContent>
+        <MudTh>#</MudTh>
+        <MudTh>Título</MudTh>
+        <MudTh>Prioridade</MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh>Responsável</MudTh>
+        <MudTh>Solicitante</MudTh>
+        <MudTh>Aberto em</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="#">@context.Id</MudTd>
+        <MudTd DataLabel="Título">@context.Titulo</MudTd>
+        <MudTd DataLabel="Prioridade"><PrioridadeBadge Prioridade="context.Prioridade"/></MudTd>
+        <MudTd DataLabel="Status"><StatusBadge Status="context.Status"/></MudTd>
+        <MudTd DataLabel="Responsável">@context.ResponsavelNome</MudTd>
+        <MudTd DataLabel="Solicitante">@context.Solicitante</MudTd>
+        <MudTd DataLabel="Aberto em">@context.AbertoEm.DataHora()</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText Class="pa-4">Nenhum chamado encontrado com os filtros atuais.</MudText>
+    </NoRecordsContent>
+</MudTable>
