@@ -2,22 +2,22 @@
 
 Aplicação web para abrir, acompanhar e resolver chamados internos (pedidos como "meu computador travou" ou "a impressora não funciona"). Cada chamado tem um responsável definido, e a atribuição pode ser automática para equilibrar a carga entre a equipe de suporte.
 
-> **Status:** em desenvolvimento. A seção [Andamento](#andamento) lista o que já está pronto e o que falta.
-
 ---
 
 ## Sumário
 
 - [Como executar](#como-executar)
+- [Telas](#telas)
 - [Banco de dados](#banco-de-dados)
 - [Stack e justificativas](#stack-e-justificativas)
 - [Arquitetura](#arquitetura)
 - [Regras de negócio](#regras-de-negócio)
+- [Testes](#testes-automatizados)
 - [Decisões técnicas](#decisões-técnicas)
 - [Trade-offs](#trade-offs)
 - [Bibliotecas utilizadas](#bibliotecas-utilizadas)
+- [Uso de IA](#uso-de-ia)
 - [Solução de problemas](#solução-de-problemas)
-- [Andamento](#andamento)
 
 ---
 
@@ -50,6 +50,21 @@ Na primeira execução o banco é criado e populado sozinho: não é preciso rod
 ```bash
 dotnet test
 ```
+
+Não é preciso configurar nada: cada teste cria o próprio banco SQLite em memória.
+
+---
+
+## Telas
+
+| Rota | Tela |
+|---|---|
+| `/` ou `/chamados` | Listagem: painel de carga por responsável, filtros e tabela. Clicar em uma linha abre o detalhe. |
+| `/chamados/novo` | Abertura de chamado, com responsável manual ou **"Atribuir automaticamente"** (padrão). |
+| `/chamados/{id}` | Detalhe, com botões de ação conforme o status atual ("Iniciar atendimento", "Marcar como resolvido", "Fechar", "Reabrir"). |
+| `/chamados/{id}/editar` | Edição dos dados, do responsável e do status. |
+
+Rotas inexistentes exibem uma página de "não encontrado", e as operações mostram o resultado (sucesso ou erro de regra de negócio) em notificações no canto da tela.
 
 ---
 
@@ -123,7 +138,7 @@ dotnet ef database update -p src/Codificar.Infrastructure -s src/Codificar.Web
 | Web / UI         | Blazor Web App, render mode Interactive Server |
 | Componentes / CSS | MudBlazor                                    |
 | Persistência     | Entity Framework Core 10 + SQLite             |
-| Testes           | xUnit, bUnit, `FakeTimeProvider`              |
+| Testes           | xUnit + SQLite em memória                     |
 
 ### Por que Blazor Server
 
@@ -160,7 +175,6 @@ src/
   Codificar.Web/             Blazor: páginas, componentes e composição (Program.cs).
 tests/
   Codificar.UnitTests/       Domínio, distribuidor e services (SQLite em memória).
-  Codificar.Web.Tests/       Componentes Blazor com bUnit.
 ```
 
 Dependências entre projetos:
@@ -182,10 +196,11 @@ Web ──► Application ──► Domain
 |-------------------|------------------|
 | `ChamadoForm`     | Formulário reutilizado em **Novo** e **Editar**. Não chama services: recebe o modelo e expõe `OnSalvar`/`OnCancelar`. |
 | `FiltrosChamados` | Filtros da listagem, com two-way binding (`@bind-Filtro`). |
-| `PainelCarga`     | Carga pendente de cada responsável, exibida no topo da listagem. |
+| `PainelCarga`     | Carga pendente de cada responsável, exibida no topo da listagem. Destaca quem é o **próximo** da distribuição automática. |
 | `StatusBadge`, `PrioridadeBadge` | Apresentação visual consistente de status e prioridade. |
+| `ChamadoNaoEncontrado` | Aviso compartilhado pelas telas de detalhe e edição. |
 
-Páginas e componentes com lógica usam code-behind (`.razor.cs`); componentes puramente visuais mantêm o `@code` inline.
+Páginas e componentes com lógica usam code-behind (`.razor.cs`); componentes puramente visuais mantêm o `@code` inline. Os componentes recebem dados por parâmetro e devolvem ações por callback; só as páginas acessam os services.
 
 ---
 
@@ -240,9 +255,25 @@ A contagem é feita no banco, apoiada no índice `(ResponsavelId, Status)`.
 ### Listagem
 
 - Painel de carga por responsável no topo.
-- Filtros por status (padrão: **pendentes**), prioridade e responsável, além de busca por texto.
+- Filtros por status (multi-seleção, padrão: **pendentes**), prioridade e responsável, além de busca por título ou solicitante. Um botão restaura os filtros padrão.
 - Ordenação padrão: pendentes primeiro → prioridade (alta → baixa) → mais antigos primeiro. Assim o que está esperando há mais tempo e é mais urgente aparece no topo.
-- Filtros e ordenação são aplicados na consulta ao banco, e não em memória.
+- Filtros e ordenação são aplicados na consulta ao banco, e não em memória. Como a prioridade é gravada como texto, a ordenação usa o peso (Alta > Média > Baixa), e não a ordem alfabética.
+
+---
+
+## Testes automatizados
+
+58 testes com **xUnit**, organizados por camada:
+
+| Arquivo | O que cobre |
+|---|---|
+| `Domain/ChamadoTests` | Abertura e validações, todas as transições de status (permitidas e proibidas), `ConcluidoEm` ao resolver/reabrir/fechar, bloqueio de reatribuição de chamado concluído, próximos status possíveis. |
+| `Domain/StatusChamadoExtensionsTests` | Definição de "em aberto". |
+| `Application/DistribuidorChamadosTests` | Menor carga, desempate por menor `Id`, Resolvido/Fechado não contam, inativos ignorados, erro sem responsáveis ativos. |
+| `Application/ResponsavelServiceTests` | Lista de ativos e painel de carga na ordem da distribuição. |
+| `Application/ChamadoServiceTests` | Criação automática e manual, validação de responsável, uso do `TimeProvider`, filtros, busca, ordenação, edição reabrindo/resolvendo com troca de responsável, alteração de status. |
+
+Os testes da camada Application rodam contra um **SQLite em memória** (uma conexão por teste, com o schema criado pelo próprio `ChamadosDbContext`). Assim as consultas passam pela mesma tradução LINQ → SQL da aplicação. As datas são controladas por um `TimeProvider` fixo (`RelogioFixo`).
 
 ---
 
@@ -252,7 +283,9 @@ A contagem é feita no banco, apoiada no índice `(ResponsavelId, Status)`.
 |---|---|
 | `IDbContextFactory` e um contexto por operação | No Blazor Server o *scope* de DI dura o circuito inteiro (a aba aberta). Um `DbContext` scoped viveria por horas, acumulando entidades rastreadas e sofrendo com concorrência. Cada operação do service abre e descarta o próprio contexto. |
 | Datas em `DateTime` UTC | O SQLite não ordena `DateTimeOffset` nativamente. Todas as datas são gravadas em UTC, e um value converter (`UtcDateTimeConverter`) marca o `Kind` como UTC na leitura, porque o SQLite não guarda essa informação. |
-| `TimeProvider` injetado | As regras que dependem de "agora" são testáveis com `FakeTimeProvider`, sem `DateTime.UtcNow` espalhado. |
+| `TimeProvider` injetado | As regras que dependem de "agora" são testáveis com um relógio fixo, sem `DateTime.UtcNow` espalhado. |
+| Limites de tamanho como constantes da entidade | O mesmo valor alimenta o mapeamento do EF e a validação do formulário (`[MaxLength]`). |
+| Consulta de carga compartilhada | O painel de carga e a distribuição automática usam a mesma consulta, então nunca discordam sobre quem é o próximo. |
 | Enums gravados como texto | O banco fica legível, e reordenar os membros do enum não corrompe os dados. |
 | Entidade com setters privados | O estado só muda pelos métodos da entidade (`Abrir`, `Editar`, `AlterarStatus`...), que validam as invariantes. |
 | FK com `DeleteBehavior.Restrict` | Não é possível apagar um responsável que tenha chamados. |
@@ -270,6 +303,12 @@ Decisões conscientes para caber no escopo e no prazo:
 - **Sem histórico de alterações:** fica registrado apenas `AtualizadoEm`. Uma trilha de auditoria (quem mudou o quê) seria o próximo passo.
 - **Application depende do core do EF Core:** a interface `IChamadosDbContext` expõe `DbSet<T>`. Isso evita um repositório genérico que só repassaria chamadas ao EF, ao custo de acoplar a Application ao pacote `Microsoft.EntityFrameworkCore` (apenas o core, não o provider).
 - **Migrations aplicadas na inicialização:** é conveniente para rodar localmente. Em produção, o ideal seria aplicá-las no pipeline de deploy.
+- **Concorrência na distribuição:** duas aberturas simultâneas podem escolher o mesmo responsável, porque a contagem e a inserção não estão na mesma transação. Para uma ferramenta interna com poucos usuários é aceitável; resolver exigiria lock ou fila.
+- **Edição lista só responsáveis ativos:** se o responsável de um chamado for desativado, ele não aparece no select de edição. Hoje não há como desativar pela interface.
+- **Busca:** usa `LIKE` do SQLite, que ignora maiúsculas/minúsculas apenas em letras sem acento.
+- **Fuso horário:** as datas são exibidas no fuso do servidor, o que coincide com o do usuário ao rodar localmente.
+- **Sem paginação na listagem:** o filtro padrão (só pendentes) mantém a lista curta; com volume maior, a tabela passaria a paginar no banco.
+- **Testes de componentes:** a UI foi validada manualmente; os testes automatizados cobrem domínio e Application.
 
 ---
 
@@ -282,9 +321,19 @@ Decisões conscientes para caber no escopo e no prazo:
 | Microsoft.EntityFrameworkCore.Sqlite | 10.0.12 | Provider SQLite |
 | Microsoft.EntityFrameworkCore.Design | 10.0.12 | Geração de migrations |
 | dotnet-ef (ferramenta local) | 10.0.12 | CLI de migrations |
-| [xUnit](https://xunit.net/) | — | Framework de testes |
-| [bUnit](https://bunit.dev/) | — | Testes de componentes Blazor |
-| Microsoft.Extensions.TimeProvider.Testing | — | `FakeTimeProvider` nos testes |
+| [xUnit](https://xunit.net/) | 2.9.3 | Framework de testes |
+| xunit.runner.visualstudio | 3.1.4 | Execução dos testes no `dotnet test` e na IDE |
+| Microsoft.NET.Test.Sdk | 17.14.1 | Infraestrutura de testes do .NET |
+| coverlet.collector | 6.0.4 | Coleta de cobertura (`dotnet test --collect:"XPlat Code Coverage"`) |
+| Fonte Roboto (Google Fonts) | — | Fonte recomendada pelo MudBlazor; sem internet, o navegador usa uma fonte substituta |
+
+---
+
+## Uso de IA
+
+O [Claude Code](https://claude.com/claude-code) (Anthropic) foi usado como ferramenta de apoio à produtividade durante o desenvolvimento: discussão de alternativas de arquitetura, geração de trechos de código, investigação de problemas de ambiente (como o bloqueio do Smart App Control descrito abaixo), revisão e documentação.
+
+As decisões de projeto foram tomadas por mim, e todo o código foi revisado, executado e testado antes de entrar no repositório.
 
 ---
 
@@ -315,15 +364,3 @@ O `Program.cs` falha logo na inicialização se `ConnectionStrings:Chamados` nã
 ### O banco ficou em um estado estranho
 
 Apague `src/Codificar.Web/chamados.db*` e rode de novo (ver [Resetar o banco](#resetar-o-banco)).
-
----
-
-## Andamento
-
-- [x] Solution em camadas (`src/`), `.gitignore`, `.editorconfig`
-- [x] Domínio: entidade `Chamado` com fluxo de status, `Responsavel`, enums, regra de pendência, exceções
-- [x] Infraestrutura: `DbContext`, factory, configurations, converter UTC, migration inicial, seed
-- [x] `dotnet-ef` como ferramenta local
-- [ ] Application: `ChamadoService`, `ResponsavelService`, `DistribuidorChamados`
-- [ ] Testes unitários (domínio, distribuidor, services) e de componentes (bUnit)
-- [ ] Web: listagem com filtros e painel de carga, cadastro, edição e detalhe
