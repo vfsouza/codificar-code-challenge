@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Codificar.Application.Responsaveis;
 
 public interface IResponsavelService {
-	/// <summary>Responsáveis que podem receber chamados, em ordem alfabética.</summary>
 	Task<IReadOnlyList<ResponsavelDto>> ListarAtivosAsync(CancellationToken cancellationToken = default);
 
-	/// <summary>Chamados em aberto por responsável; o primeiro é o próximo da distribuição automática.</summary>
 	Task<IReadOnlyList<CargaResponsavelDto>> ObterCargaAsync(CancellationToken cancellationToken = default);
 }
 

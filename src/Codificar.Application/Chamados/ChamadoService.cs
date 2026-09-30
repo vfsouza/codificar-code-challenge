@@ -87,8 +87,7 @@ public sealed class ChamadoService(
 
 		chamado.Editar(request.Titulo, request.Descricao, request.Prioridade, request.Solicitante, agora);
 
-		// Só é possível reatribuir um chamado pendente: ao reabrir, muda o status antes;
-		// ao concluir, reatribui antes.
+		// Reatribuição só vale para chamado pendente, então a ordem depende do novo status
 		if (request.Status.EstaPendente()) {
 			MudarStatusSeNecessario(chamado, request.Status, agora);
 			await ReatribuirSeNecessarioAsync(db, chamado, request.ResponsavelId, agora, cancellationToken);

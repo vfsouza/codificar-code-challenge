@@ -26,9 +26,7 @@ public sealed class DatabaseInitializer(
 	private List<Chamado> CriarChamadosExemplo() {
 		var agora = timeProvider.GetUtcNow().UtcDateTime;
 
-		// Carga pendente resultante: Ana 3, Carla 2, Bruno 1, Diego 0.
-		// Diego tem chamados resolvidos/fechados, mas nenhum pendente:
-		// o próximo chamado automático vai para ele, o que demonstra a regra de "em aberto".
+		// Carga pendente: Ana 3, Carla 2, Bruno 1, Diego 0 (Diego só tem chamados concluídos)
 		return [
 			Criar(
 					"Computador travando ao abrir o ERP",

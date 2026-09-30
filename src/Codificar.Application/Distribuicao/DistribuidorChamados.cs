@@ -6,11 +6,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Codificar.Application.Distribuicao;
 
 public interface IDistribuidorChamados {
-	/// <summary>
-	/// Retorna o Id do responsável ativo com menos chamados em aberto.
-	/// Empate: menor Id.
-	/// </summary>
-	/// <exception cref="DomainException">Quando não há nenhum responsável ativo.</exception>
 	Task<int> EscolherResponsavelAsync(CancellationToken cancellationToken = default);
 }
 

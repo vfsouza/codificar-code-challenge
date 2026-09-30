@@ -19,6 +19,6 @@ public class CriarChamadoRequest {
 	[MaxLength(Chamado.SolicitanteTamanhoMaximo, ErrorMessage = "O solicitante deve ter no máximo {1} caracteres.")]
 	public string Solicitante { get; set; } = string.Empty;
 
-	/// <summary>Nulo = atribuir automaticamente ao responsável com menos chamados em aberto.</summary>
+	// null = distribuição automática
 	public int? ResponsavelId { get; set; }
 }

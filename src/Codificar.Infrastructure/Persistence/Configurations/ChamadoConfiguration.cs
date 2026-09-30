@@ -15,7 +15,6 @@ internal sealed class ChamadoConfiguration : IEntityTypeConfiguration<Chamado> {
 		builder.Property(c => c.Descricao).HasMaxLength(Chamado.DescricaoTamanhoMaximo).IsRequired();
 		builder.Property(c => c.Solicitante).HasMaxLength(Chamado.SolicitanteTamanhoMaximo).IsRequired();
 
-		// Enums como texto: banco legível e imune a reordenação dos membros.
 		builder.Property(c => c.Prioridade).HasConversion<string>().HasMaxLength(20);
 		builder.Property(c => c.Status).HasConversion<string>().HasMaxLength(20);
 
@@ -28,7 +27,6 @@ internal sealed class ChamadoConfiguration : IEntityTypeConfiguration<Chamado> {
 			.HasForeignKey(c => c.ResponsavelId)
 			.OnDelete(DeleteBehavior.Restrict);
 
-		// Apoiam a contagem de pendentes por responsável e os filtros da listagem.
 		builder.HasIndex(c => new { c.ResponsavelId, c.Status });
 		builder.HasIndex(c => c.Status);
 	}
